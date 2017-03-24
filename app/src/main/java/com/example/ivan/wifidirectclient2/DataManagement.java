@@ -2,12 +2,15 @@ package com.example.ivan.wifidirectclient2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 /**
@@ -47,12 +50,22 @@ public class DataManagement {
 
     public byte[] getImage(){
         if(image_loaded){
-            image_loaded = false;
-            return  image_holder;
+            /*
+            YuvImage yuv = new YuvImage(image_holder, 17, 640, 480, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            yuv.compressToJpeg(new Rect(100, 100, 540, 380), 50, out);
+            byte[] image_buffer = out.toByteArray();
+            return  image_buffer;
+            */
+            return image_holder;
         }else{
             Log.d(TAG,"No Image Loaded");
             return null;
         }
+    }
+
+    public void unloadImage(){
+        image_loaded = false;
     }
 
     public boolean getImageLoadStatus(){

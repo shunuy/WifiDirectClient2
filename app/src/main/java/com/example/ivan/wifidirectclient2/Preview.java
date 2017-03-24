@@ -3,6 +3,7 @@ package com.example.ivan.wifidirectclient2;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
@@ -29,7 +30,7 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
     List<int[]> fpsList;
 
     int count = 0;
-
+    boolean skip_frame = true;
     //DATA TRANSMISSION
     DataManagement dm;
 
@@ -72,18 +73,27 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
         param = mCamera.getParameters();
+
+        List<String> epson_supported = param.getSupportedEpsonCameraModes();
+        Log.d(TAG, "Supported Modes:");
+        for (String s : epson_supported){
+            Log.d(TAG, "Mode: " + s);
+        }
+        Log.d(TAG,"Selected Mode: " + epson_supported.get(2));
+        param.setEpsonCameraMode(epson_supported.get(2));
         previewSize = getSmallestPreviewSize();
+
         //previewSize = getBestPreviewSize();
-        //param.setPreviewSize(previewSize.width,previewSize.height);
 
         getFPS();
-        getResSize();
         param.setPreviewFpsRange(fpsList.get(0)[0],fpsList.get(0)[1]);
+        //Log.d(TAG,"Preview fps Selected: " + fpsList.get(0)[0] + " to " + fpsList.get(0)[1]);
+        //getResSize();
         //previewSize = resSize.get(7);
-        //param.setPreviewSize(previewSize.width,previewSize.height);
-        //Constant for NV21 format is 17
-        param.setPreviewFormat(17);
 
+        //Constant for NV21 format is 17
+        //param.setPreviewFormat(17);
+        param.setPreviewSize(previewSize.width,previewSize.height);
         mCamera.setDisplayOrientation(0);
         //For Portrait modes: mCamera.setDisplayOrientation(90);
         mCamera.setParameters(param);
@@ -183,24 +193,25 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        //dm.ping();
-        try{
-            count = count + 1;
-            if (!dm.getImageLoadStatus()) {
-                //Log.d(TAG, "Frame received: " + count);
-                YuvImage yuv = new YuvImage(data, param.getPreviewFormat(), previewSize.width, previewSize.height, null);
 
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 30, out);
+        //Log.d(TAG,"Preview Data Length: " + data.length);
 
-                byte[] bytes = out.toByteArray();
-                //Log.d(TAG,"Length of byte: " + bytes.length);
-                dm.loadImage(bytes);
-            }
+        count = count + 1;
+        if (!dm.getImageLoadStatus()) {
+        /*
+        //Log.d(TAG, "Frame received: " + count);
+        YuvImage yuv = new YuvImage(data, param.getPreviewFormat(), previewSize.width, previewSize.height, null);
 
-        }catch(Exception e){
-            Log.d(TAG,"Error in Preview Callback: " + e.getMessage());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 20, out);
+
+        byte[] bytes = out.toByteArray();
+        //Log.d(TAG,"Length of byte: " + bytes.length);
+        dm.loadImage(bytes);
+        */
+            dm.loadImage(data);
         }
+
     }
 
     public void pausePreview(){

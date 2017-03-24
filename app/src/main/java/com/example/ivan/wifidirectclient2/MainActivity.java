@@ -56,6 +56,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //TRANSMISSION
     DataManagement                  dm;
     DataTransmission                dt;
+    Thread                          dt_thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +122,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         unregisterReceiver(mReceiver);
         dm.setConnectionStatus(false);
         mPreview.pausePreview();
+        dt_thread.interrupt();
     }
 
     public void setNetworkToReadyState(boolean status, WifiP2pInfo info, WifiP2pDevice device){
@@ -149,6 +151,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     public void startService() {
         Log.d(TAG, "Start Service Function Called");
         dt.updateInitialisationData(wifiP2pInfo);
-        new Thread(dt).start();
+        dt_thread = new Thread(dt);
+        dt_thread.start();
     }
 }
