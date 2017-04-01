@@ -26,9 +26,11 @@ public class DataManagement {
 
     //SYSTEM DATA
     byte[]              image_holder;
+    byte[]              audio_holder;
 
     //SYSTEM MANAGEMENT
     boolean             image_loaded = false;
+    boolean             audio_loaded = false;
     boolean             wifi_connected = false;
     private             MainActivity mActivity;
 
@@ -39,12 +41,25 @@ public class DataManagement {
 
     public void loadImage(byte[] b){
         if (!image_loaded){
-            image_holder = Arrays.copyOf(b, b.length);;
+            //image_holder = Arrays.copyOf(b, b.length);
+            image_holder = b;
             image_loaded = true;
             Log.d(TAG, "Data Manager, Image loaded: " + load_count);
             load_count = load_count + 1;
         }else{
             Log.d(TAG,"Image not loaded, holder full");
+        }
+    }
+
+    public boolean loadAudio (byte[] b){
+        if(!audio_loaded){
+            audio_holder = b;
+            audio_loaded = true;
+            Log.d(TAG,"Data Manager, Audio Loaded: " + load_count);
+            return true;
+        }else {
+            Log.d(TAG,"Audio not loaded, holder full");
+            return false;
         }
     }
 
@@ -64,8 +79,21 @@ public class DataManagement {
         }
     }
 
+    public byte[] getAudio(){
+        if(audio_loaded){
+            return audio_holder;
+        }else{
+            Log.d(TAG,"No Audio Loaded");
+            return null;
+        }
+    }
+
     public void unloadImage(){
         image_loaded = false;
+    }
+
+    public void unloadAudio(){
+        audio_loaded = false;
     }
 
     public boolean getImageLoadStatus(){

@@ -114,10 +114,12 @@ public class DataTransmission implements Runnable{
         int marker=0;
         int picture_length;
         nv21_buffer = dm.getImage();
+        audioData = dm.getAudio();
 
         YuvImage yuv = new YuvImage(nv21_buffer, 17, 640, 480, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuv.compressToJpeg(new Rect(50, 50, 590, 430), 50, out);
+        //yuv.compressToJpeg(new Rect(50, 50, 590, 430), 100, out);
+        yuv.compressToJpeg(new Rect(0, 0, 640, 480), 50, out);
         pictureData = out.toByteArray();
         byte[] transfer_length  = ByteBuffer.allocate(4).putInt(pictureData.length).array();
         picture_length = pictureData.length;
@@ -137,6 +139,7 @@ public class DataTransmission implements Runnable{
         } catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
+
         Log.d(TAG, "Sending Second Packet");
         Log.d(TAG,"Length of data: " + picture_length);
         while(marker < picture_length){
@@ -154,8 +157,18 @@ public class DataTransmission implements Runnable{
             }
             marker = marker + write;
         }
-        Log.d(TAG,"Send Complete");
         dm.unloadImage();
+
+        Log.d(TAG,"Sending Third Packet");
+        try{
+            os.write(audioData, 0, audioData.length);
+        }catch (IOException e) {
+            Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
+        }
+        dm.unloadAudio();
+
+        Log.d(TAG,"Send Complete");
+
         /*
         try {
             os.write(transfer_length, 0, transfer_length.length);

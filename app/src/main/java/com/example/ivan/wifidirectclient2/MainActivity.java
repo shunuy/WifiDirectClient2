@@ -37,6 +37,9 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //CAMERA
     Preview                         mPreview;
 
+    //AUDIO
+    Audio                           audio;
+
     //CONNECTIVITY
     WifiP2pManager                  mManager;
     WifiP2pManager.Channel          mChannel;
@@ -56,7 +59,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //TRANSMISSION
     DataManagement                  dm;
     DataTransmission                dt;
-    Thread                          dt_thread;
+    Thread                          dt_thread, a_thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,9 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
         //SET DATA TRANSMISSION
         dt = new DataTransmission(this, port,wifiP2pInfo,dm);
+
+        //SET AUDIO
+        audio = new Audio(dm);
 
         button_start_server = (Button)findViewById(R.id.button_start_server);
         button_start_server.setOnClickListener(new View.OnClickListener(){
@@ -153,5 +159,8 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         dt.updateInitialisationData(wifiP2pInfo);
         dt_thread = new Thread(dt);
         dt_thread.start();
+
+        a_thread = new Thread(audio);
+        a_thread.start();
     }
 }

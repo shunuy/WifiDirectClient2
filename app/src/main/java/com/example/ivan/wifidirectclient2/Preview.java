@@ -74,6 +74,7 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
 
         param = mCamera.getParameters();
 
+
         List<String> epson_supported = param.getSupportedEpsonCameraModes();
         Log.d(TAG, "Supported Modes:");
         for (String s : epson_supported){
