@@ -2,28 +2,19 @@ package com.example.ivan.wifidirectclient2;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.os.IBinder;
-import android.os.ResultReceiver;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends Activity implements WifiP2pManager.PeerListListener {
@@ -103,7 +94,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         dt = new DataTransmission(this, port,wifiP2pInfo,dm);
 
         //SET AUDIO
-        audio = new Audio(dm);
+        //audio = new Audio(dm);
 
         button_start_server = (Button)findViewById(R.id.button_start_server);
         button_start_server.setOnClickListener(new View.OnClickListener(){
@@ -160,7 +151,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         dt_thread = new Thread(dt);
         dt_thread.start();
 
-        a_thread = new Thread(audio);
-        a_thread.start();
+        //a_thread = new Thread(audio);
+        //a_thread.start();
     }
 }

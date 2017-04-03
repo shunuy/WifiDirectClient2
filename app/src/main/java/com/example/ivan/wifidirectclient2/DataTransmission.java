@@ -2,9 +2,7 @@ package com.example.ivan.wifidirectclient2;
 
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
-import android.os.ResultReceiver;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -32,6 +30,7 @@ public class DataTransmission implements Runnable{
     private MainActivity mActivity;
     DataManagement dm;
     OutputStream os = null;
+    BufferedOutputStream bos = null;
     Socket clientSocket = null;
 
 
@@ -55,14 +54,14 @@ public class DataTransmission implements Runnable{
             clientSocket = new Socket(targetIP,port);
             clientSocket.setPerformancePreferences(0 , 1, 1);
             clientSocket.setTcpNoDelay(true);
+            //clientSocket.setSendBufferSize(1024*1024);
             clientSocket.setSendBufferSize(1024*1024);
             clientSocket.setReceiveBufferSize(1024*1024);
             Log.d(TAG,"=========Client Socket Details=========");
             Log.d(TAG,"Send Buffer Size: " + clientSocket.getSendBufferSize());
             Log.d(TAG,"Receive Buffer Size: " + clientSocket.getReceiveBufferSize());
-
             os = clientSocket.getOutputStream();
-            //os = new BufferedOutputStream(clientSocket.getOutputStream());
+            os = new BufferedOutputStream(clientSocket.getOutputStream());
 
         }catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
@@ -114,7 +113,7 @@ public class DataTransmission implements Runnable{
         int marker=0;
         int picture_length;
         nv21_buffer = dm.getImage();
-        audioData = dm.getAudio();
+        //audioData = dm.getAudio();
 
         YuvImage yuv = new YuvImage(nv21_buffer, 17, 640, 480, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -159,6 +158,7 @@ public class DataTransmission implements Runnable{
         }
         dm.unloadImage();
 
+        /*
         Log.d(TAG,"Sending Third Packet");
         try{
             os.write(audioData, 0, audioData.length);
@@ -166,6 +166,17 @@ public class DataTransmission implements Runnable{
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
         dm.unloadAudio();
+        */
+
+        //FLUSH
+        /*
+        try{
+            os.write("\n".getBytes());
+            os.flush();
+        }catch (IOException e) {
+            Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
+        }
+        */
 
         Log.d(TAG,"Send Complete");
 

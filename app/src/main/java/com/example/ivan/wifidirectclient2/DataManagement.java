@@ -1,17 +1,6 @@
 package com.example.ivan.wifidirectclient2;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.net.wifi.p2p.WifiP2pInfo;
-import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.util.Log;
-import android.widget.TextView;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 
 /**
  * Created by ivan on 17/3/17.

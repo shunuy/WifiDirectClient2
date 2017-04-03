@@ -1,19 +1,12 @@
 package com.example.ivan.wifidirectclient2;
 
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.ContactsContract;
-import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 //Preview class used to start the camera preview
@@ -83,6 +76,7 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
         Log.d(TAG,"Selected Mode: " + epson_supported.get(2));
         param.setEpsonCameraMode(epson_supported.get(2));
         previewSize = getSmallestPreviewSize();
+
 
         //previewSize = getBestPreviewSize();
 
@@ -198,19 +192,24 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
         //Log.d(TAG,"Preview Data Length: " + data.length);
 
         count = count + 1;
-        if (!dm.getImageLoadStatus()) {
-        /*
-        //Log.d(TAG, "Frame received: " + count);
-        YuvImage yuv = new YuvImage(data, param.getPreviewFormat(), previewSize.width, previewSize.height, null);
+        if(skip_frame){
+            skip_frame = false;
+        }else {
+            skip_frame = true;
+            if (!dm.getImageLoadStatus()) {
+            /*
+            //Log.d(TAG, "Frame received: " + count);
+            YuvImage yuv = new YuvImage(data, param.getPreviewFormat(), previewSize.width, previewSize.height, null);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 20, out);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 20, out);
 
-        byte[] bytes = out.toByteArray();
-        //Log.d(TAG,"Length of byte: " + bytes.length);
-        dm.loadImage(bytes);
-        */
-            dm.loadImage(data);
+            byte[] bytes = out.toByteArray();
+            //Log.d(TAG,"Length of byte: " + bytes.length);
+            dm.loadImage(bytes);
+            */
+                dm.loadImage(data);
+            }
         }
 
     }
