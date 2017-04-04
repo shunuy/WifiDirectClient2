@@ -113,8 +113,6 @@ public class DataTransmission implements Runnable{
         int marker=0;
         int picture_length;
         nv21_buffer = dm.getImage();
-        //audioData = dm.getAudio();
-
         YuvImage yuv = new YuvImage(nv21_buffer, 17, 640, 480, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         //yuv.compressToJpeg(new Rect(50, 50, 590, 430), 100, out);
@@ -158,15 +156,25 @@ public class DataTransmission implements Runnable{
         }
         dm.unloadImage();
 
-        /*
+        audioData = dm.getAudio();
+        while(audioData==null){
+            Log.d(TAG,"Null audio data");
+            try{
+                Thread.sleep(100);
+            }catch (InterruptedException e) {
+                Log.d(TAG,"Error sleeping thread: " + e.toString());
+            }
+            audioData = dm.getAudio();
+        }
+
         Log.d(TAG,"Sending Third Packet");
-        try{
+        try {
+            Log.d(TAG,"Writing Audio Data of length: " + audioData.length);
             os.write(audioData, 0, audioData.length);
-        }catch (IOException e) {
+        } catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
         dm.unloadAudio();
-        */
 
         //FLUSH
         /*

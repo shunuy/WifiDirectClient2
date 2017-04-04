@@ -16,7 +16,7 @@ public class Audio implements Runnable{
     private int             channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int             audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private int             sampleRate = 8000;
-    private int             minBufSize;
+    private int             minBufSize = 2048;
     byte[]                  buffer = new byte[minBufSize];
     boolean                 audioStatus = true;
 
@@ -25,7 +25,7 @@ public class Audio implements Runnable{
     public Audio(DataManagement d){
         Log.d(TAG,"Audio Class Called");
         dm = d;
-        minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+        //minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
 
         Log.d(TAG,"Min Buffer Size is:" + minBufSize);
         Log.d(TAG,"Audio File Format is: " + audioFormat);
@@ -45,6 +45,11 @@ public class Audio implements Runnable{
 
             recorder.read(buffer, 0, buffer.length);
             dm.loadAudio(buffer);
+            try{
+                Thread.sleep(100);
+            }catch (InterruptedException e) {
+                Log.d(TAG,"Error sleeping thread: " + e.toString());
+            }
 
             if (Thread.interrupted()) {
                 Log.d(TAG,"Audio Thread Interrupted");

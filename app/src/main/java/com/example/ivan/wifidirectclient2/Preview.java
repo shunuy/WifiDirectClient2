@@ -67,7 +67,7 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
 
         param = mCamera.getParameters();
 
-
+        /*
         List<String> epson_supported = param.getSupportedEpsonCameraModes();
         Log.d(TAG, "Supported Modes:");
         for (String s : epson_supported){
@@ -76,15 +76,15 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
         Log.d(TAG,"Selected Mode: " + epson_supported.get(2));
         param.setEpsonCameraMode(epson_supported.get(2));
         previewSize = getSmallestPreviewSize();
-
+        */
 
         //previewSize = getBestPreviewSize();
 
         getFPS();
         param.setPreviewFpsRange(fpsList.get(0)[0],fpsList.get(0)[1]);
         //Log.d(TAG,"Preview fps Selected: " + fpsList.get(0)[0] + " to " + fpsList.get(0)[1]);
-        //getResSize();
-        //previewSize = resSize.get(7);
+        getResSize();
+        previewSize = resSize.get(7);
 
         //Constant for NV21 format is 17
         //param.setPreviewFormat(17);
@@ -192,26 +192,31 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
         //Log.d(TAG,"Preview Data Length: " + data.length);
 
         count = count + 1;
+
+        if (!dm.getImageLoadStatus()) {
+        /*
+        //Log.d(TAG, "Frame received: " + count);
+        YuvImage yuv = new YuvImage(data, param.getPreviewFormat(), previewSize.width, previewSize.height, null);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 20, out);
+
+        byte[] bytes = out.toByteArray();
+        //Log.d(TAG,"Length of byte: " + bytes.length);
+        dm.loadImage(bytes);
+        */
+            dm.loadImage(data);
+        }
+        /*
         if(skip_frame){
             skip_frame = false;
         }else {
             skip_frame = true;
             if (!dm.getImageLoadStatus()) {
-            /*
-            //Log.d(TAG, "Frame received: " + count);
-            YuvImage yuv = new YuvImage(data, param.getPreviewFormat(), previewSize.width, previewSize.height, null);
-
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 20, out);
-
-            byte[] bytes = out.toByteArray();
-            //Log.d(TAG,"Length of byte: " + bytes.length);
-            dm.loadImage(bytes);
-            */
                 dm.loadImage(data);
             }
         }
-
+        */
     }
 
     public void pausePreview(){
