@@ -81,10 +81,18 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
         //previewSize = getBestPreviewSize();
 
         getFPS();
-        param.setPreviewFpsRange(fpsList.get(0)[0],fpsList.get(0)[1]);
+        //param.setPreviewFpsRange(fpsList.get(0)[0],fpsList.get(0)[1]);
         //Log.d(TAG,"Preview fps Selected: " + fpsList.get(0)[0] + " to " + fpsList.get(0)[1]);
+
         getResSize();
+
+        // FOR SAMSUNG S4
         previewSize = resSize.get(7);
+        param.setPreviewFpsRange(15000,fpsList.get(0)[1]);
+
+        // FOR BT-200
+        //previewSize = resSize.get(1);
+        //param.setPreviewFpsRange(fpsList.get(3)[0],fpsList.get(3)[1]);
 
         //Constant for NV21 format is 17
         //param.setPreviewFormat(17);
@@ -92,6 +100,7 @@ public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Ca
         mCamera.setDisplayOrientation(0);
         //For Portrait modes: mCamera.setDisplayOrientation(90);
         mCamera.setParameters(param);
+        dm.setImageSize(previewSize.width, previewSize.height);
 
         try{
             mCamera.startPreview();

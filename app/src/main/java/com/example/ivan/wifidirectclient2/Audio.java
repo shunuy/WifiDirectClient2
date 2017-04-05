@@ -16,8 +16,9 @@ public class Audio implements Runnable{
     private int             channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int             audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private int             sampleRate = 8000;
-    private int             minBufSize = 2048;
-    byte[]                  buffer = new byte[minBufSize];
+    //private int             audioBufSize = 1408*2;
+    private int             audioBufSize = 1024*2;
+    byte[]                  buffer;
     boolean                 audioStatus = true;
 
     DataManagement          dm;
@@ -25,12 +26,15 @@ public class Audio implements Runnable{
     public Audio(DataManagement d){
         Log.d(TAG,"Audio Class Called");
         dm = d;
-        //minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+        int minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
 
         Log.d(TAG,"Min Buffer Size is:" + minBufSize);
         Log.d(TAG,"Audio File Format is: " + audioFormat);
-
-        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
+        //audioBufSize = minBufSize;
+        Log.d(TAG,"Buffer size set: " + audioBufSize);
+        dm.setAudioBufSize(audioBufSize);
+        buffer = new byte [audioBufSize];
+        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,audioBufSize);
     }
 
     public void run(){

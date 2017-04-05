@@ -16,6 +16,9 @@ public class DataManagement {
     //SYSTEM DATA
     byte[]              image_holder;
     byte[]              audio_holder;
+    int                 image_height;
+    int                 image_width;
+    int                 audioBufSize;
 
     //SYSTEM MANAGEMENT
     boolean             image_loaded = false;
@@ -30,7 +33,6 @@ public class DataManagement {
 
     public void loadImage(byte[] b){
         if (!image_loaded){
-            //image_holder = Arrays.copyOf(b, b.length);
             image_holder = b;
             image_loaded = true;
             Log.d(TAG, "Data Manager, Image loaded: " + load_count);
@@ -54,13 +56,6 @@ public class DataManagement {
 
     public byte[] getImage(){
         if(image_loaded){
-            /*
-            YuvImage yuv = new YuvImage(image_holder, 17, 640, 480, null);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            yuv.compressToJpeg(new Rect(100, 100, 540, 380), 50, out);
-            byte[] image_buffer = out.toByteArray();
-            return  image_buffer;
-            */
             return image_holder;
         }else{
             Log.d(TAG,"No Image Loaded");
@@ -101,9 +96,23 @@ public class DataManagement {
         }
     }
 
+    public int getImageHeight(){return image_height;}
+
+    public int getImageWidth(){return image_width;}
+
+
     public void setConnectionStatus(boolean b){
         wifi_connected = b;
     }
+
+    public void setImageSize(int w, int h){
+        image_height = h;
+        image_width = w;
+    }
+
+    public void setAudioBufSize(int i){ audioBufSize = i; }
+
+    public int getAudioBufSize(){return audioBufSize; }
 
     public void testDataManagerCall(){
         Log.d(TAG,"Data Manager Call: " + test_count);

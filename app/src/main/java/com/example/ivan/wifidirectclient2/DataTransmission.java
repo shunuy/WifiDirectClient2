@@ -21,8 +21,10 @@ public class DataTransmission implements Runnable{
 
     private Boolean transmissionReady=false;
     private int port;
+    private int audioBufSize=0;
     private byte[] nv21_buffer;
     private byte[] pictureData, audioData;
+    int image_height, image_width;
     InetAddress targetIP;
     WifiP2pInfo wifiP2pInfo;
 
@@ -49,12 +51,14 @@ public class DataTransmission implements Runnable{
     public void run(){
         Log.d(TAG,"Initialising Data Transmission Class");
         targetIP = wifiP2pInfo.groupOwnerAddress;
+        image_height = dm.getImageHeight();
+        image_width = dm.getImageWidth();
+        audioBufSize = dm.getAudioBufSize();
 
         try {
             clientSocket = new Socket(targetIP,port);
             clientSocket.setPerformancePreferences(0 , 1, 1);
             clientSocket.setTcpNoDelay(true);
-            //clientSocket.setSendBufferSize(1024*1024);
             clientSocket.setSendBufferSize(1024*1024);
             clientSocket.setReceiveBufferSize(1024*1024);
             Log.d(TAG,"=========Client Socket Details=========");
@@ -68,7 +72,11 @@ public class DataTransmission implements Runnable{
         }
 
         transmissionReady = true;
-        Log.d(TAG,"Data Transmission Initialisation Completed");
+
+        Log.d(TAG,"Send Configuration Data to Server");
+        if(dm.getConnectionStatus()){
+            sendConfigurationData();
+        }
 
         Log.d(TAG,"Begin Transmission Wait Loop");
         while (true){
@@ -106,39 +114,27 @@ public class DataTransmission implements Runnable{
     }
 
     public void transfer(){
-        //pictureData = dm.getImage();
-        Log.d(TAG,"Client: Processing Image");
+        //Log.d(TAG,"Client: Processing Image");
+        int         write;
+        int         marker=0;
+        int         picture_length;
 
-        int write;
-        int marker=0;
-        int picture_length;
         nv21_buffer = dm.getImage();
-        YuvImage yuv = new YuvImage(nv21_buffer, 17, 640, 480, null);
+        YuvImage yuv = new YuvImage(nv21_buffer, 17, image_width, image_height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        //yuv.compressToJpeg(new Rect(50, 50, 590, 430), 100, out);
-        yuv.compressToJpeg(new Rect(0, 0, 640, 480), 50, out);
+        yuv.compressToJpeg(new Rect(0, 0, image_width, image_height), 70, out);
         pictureData = out.toByteArray();
         byte[] transfer_length  = ByteBuffer.allocate(4).putInt(pictureData.length).array();
         picture_length = pictureData.length;
 
-        /*
-        byte[] transfer = dm.getImage();
-        byte[] transfer_length  = ByteBuffer.allocate(4).putInt(transfer.length).array();
-        */
-
-        //int test_length = byteArrayToInt(transfer_length);
-        //Log.d(TAG, "Transfer length test: " + test_length);
-
-        Log.d(TAG, "Client: Preparing to send");
-        Log.d(TAG, "Sending First Packet");
+        //Log.d(TAG, "Sending First Packet");
         try {
             os.write(transfer_length, 0, transfer_length.length);
         } catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
 
-        Log.d(TAG, "Sending Second Packet");
-        Log.d(TAG,"Length of data: " + picture_length);
+        //Log.d(TAG, "Sending Second Packet, Length of data: " + picture_length);
         while(marker < picture_length){
 
             if(picture_length - marker >=1024){
@@ -158,7 +154,7 @@ public class DataTransmission implements Runnable{
 
         audioData = dm.getAudio();
         while(audioData==null){
-            Log.d(TAG,"Null audio data");
+            //Log.d(TAG,"Null audio data");
             try{
                 Thread.sleep(100);
             }catch (InterruptedException e) {
@@ -167,44 +163,25 @@ public class DataTransmission implements Runnable{
             audioData = dm.getAudio();
         }
 
-        Log.d(TAG,"Sending Third Packet");
+        //Log.d(TAG,"Sending Third Packet");
         try {
-            Log.d(TAG,"Writing Audio Data of length: " + audioData.length);
+            //Log.d(TAG,"Writing Audio Data of length: " + audioData.length);
             os.write(audioData, 0, audioData.length);
         } catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
         dm.unloadAudio();
 
-        //FLUSH
-        /*
-        try{
-            os.write("\n".getBytes());
-            os.flush();
-        }catch (IOException e) {
-            Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
-        }
-        */
+        //Log.d(TAG,"Send Complete");
+    }
 
-        Log.d(TAG,"Send Complete");
-
-        /*
+    public void sendConfigurationData(){
+        byte[] audioBufSizeData =  ByteBuffer.allocate(4).putInt(audioBufSize).array();
         try {
-            os.write(transfer_length, 0, transfer_length.length);
-           // Log.d("NEUTRAL","Size of transfer length: " + transfer_length.length);
-            //os.write(transfer, 0, transfer.length);
-            //Log.d("NEUTRAL","Size of data transfer: " + transfer.length);
-            os.write(pictureData, 0, pictureData.length);
-            Log.d("NEUTRAL","Size of data transfer: " + pictureData.length);
-
-            //os.flush();
-           // os.close();
-            //Log.d(TAG, "Send Complete");
-            dm.unloadImage();
+            os.write(audioBufSizeData, 0, audioBufSizeData.length);
         } catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
-        */
     }
 
     public static int byteArrayToInt(byte[] b)
