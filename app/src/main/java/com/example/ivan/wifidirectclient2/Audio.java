@@ -16,8 +16,8 @@ public class Audio implements Runnable{
     private int             channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int             audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private int             sampleRate = 8000;
-    //private int             audioBufSize = 1408*2;
-    private int             audioBufSize = 1024*2;
+    private int             audioBufSize = 1408*2;
+    //private int             audioBufSize = 1024*2;
     byte[]                  buffer;
     boolean                 audioStatus = true;
 
