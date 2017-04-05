@@ -12,8 +12,13 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Spinner;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +29,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //USER-INTERFACE
     FrameLayout                     frame_layout1;
     Button                          button_transmit, button_start_server;
+    Spinner                         spinner1, spinner2;
+    ArrayAdapter<String>            spinnerArrayAdapter1, spinnerArrayAdapter2;
+    List<String>                    availableFPS = new ArrayList<String>();
+    List<String>                    availableRes = new ArrayList<String>();
 
     //CAMERA
     Preview                         mPreview;
@@ -45,7 +54,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //SYSTEM MANAGEMENT
     Boolean                         transferReadyState=false;
     Boolean                         validPeers = false;
-    boolean                         activeTransfer = false;
+    boolean                         activeStreaming = false;
 
     //TRANSMISSION
     DataManagement                  dm;
@@ -96,6 +105,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         //SET AUDIO
         audio = new Audio(dm);
 
+        // SET USER INTERFACE
         button_start_server = (Button)findViewById(R.id.button_start_server);
         button_start_server.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -105,7 +115,42 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             }
         });
 
+        // SET UP USER SELECTIONS
+        spinner1 = (Spinner)findViewById(R.id.spinner);
+        Log.d(TAG, "Updating RES spinner");
+        spinner1.setOnItemSelectedListener(new OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(!activeStreaming) {
+                    spinner1.setSelection(position);
+                    Log.d("NEUTRAL", "RES Selected: " + availableRes.get(position));
+                    mPreview.updateResolution(position);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+                //spinner1.setSelection(0);
+            }
+        });
+
+        spinner2 = (Spinner)findViewById(R.id.spinner2);
+        Log.d(TAG, "Updating FPS spinner");
+        spinner2.setOnItemSelectedListener(new OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(!activeStreaming) {
+                    spinner2.setSelection(position);
+                    Log.d("NEUTRAL", "FPS Selected: " + availableFPS.get(position));
+                    mPreview.updateFPS(position);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+                //spinner1.setSelection(0);
+            }
+        });
     }
+
 
     @Override
     protected void onResume(){
@@ -116,9 +161,13 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     @Override
     protected void onPause(){
         super.onPause();
+        Log.d(TAG,"Unregistering receiver");
         unregisterReceiver(mReceiver);
+        Log.d(TAG,"Setting Connection Status to False");
         dm.setConnectionStatus(false);
+        Log.d(TAG,"Pausing Preview");
         mPreview.pausePreview();
+        Log.d(TAG,"Interrupting Transmission Thread");
         dt_thread.interrupt();
     }
 
@@ -147,11 +196,24 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     public void startService() {
         Log.d(TAG, "Start Service Function Called");
+        activeStreaming = true;
         dt.updateInitialisationData(wifiP2pInfo);
         dt_thread = new Thread(dt);
         dt_thread.start();
 
         a_thread = new Thread(audio);
         a_thread.start();
+    }
+
+    public void updateUserSelection(){
+        Log.d(TAG,"Updating User Selection");
+        availableFPS = dm.getAvailableFPS();
+        availableRes = dm.getAvailableRes();
+        spinnerArrayAdapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, availableRes);
+        spinnerArrayAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(spinnerArrayAdapter1);
+        spinnerArrayAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, availableFPS);
+        spinnerArrayAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(spinnerArrayAdapter2);
     }
 }

@@ -2,6 +2,8 @@ package com.example.ivan.wifidirectclient2;
 
 import android.util.Log;
 
+import java.util.List;
+
 /**
  * Created by ivan on 17/3/17.
  */
@@ -19,12 +21,16 @@ public class DataManagement {
     int                 image_height;
     int                 image_width;
     int                 audioBufSize;
+    List<String>        resSize;
+    List<String>        fpsList;
 
     //SYSTEM MANAGEMENT
     boolean             image_loaded = false;
     boolean             audio_loaded = false;
     boolean             wifi_connected = false;
     private             MainActivity mActivity;
+    boolean             resUpdated = false;
+    boolean             fpsUpdated = false;
 
     public DataManagement(MainActivity activity){
         Log.d(TAG, "Data Manager Called");
@@ -100,6 +106,27 @@ public class DataManagement {
 
     public int getImageWidth(){return image_width;}
 
+    public List<String> getAvailableFPS(){
+        //Log.d(TAG,"Getting available FPS Range");
+        if (fpsUpdated){
+            Log.d(TAG,"Returning FPS Range");
+            return fpsList;
+        }else{
+            Log.d(TAG,"Returning Null");
+            return null;
+        }
+    }
+
+    public List<String> getAvailableRes(){
+        //Log.d(TAG,"Getting available Res");
+        if (resUpdated){
+            Log.d(TAG,"Returning Res Range");
+            return resSize;
+        }else{
+            Log.d(TAG,"Returning Null");
+            return null;
+        }
+    }
 
     public void setConnectionStatus(boolean b){
         wifi_connected = b;
@@ -111,6 +138,17 @@ public class DataManagement {
     }
 
     public void setAudioBufSize(int i){ audioBufSize = i; }
+
+    public void setAvailableResSize(List<String> r){
+        resSize = r;
+        resUpdated = true;
+        mActivity.updateUserSelection();
+    }
+
+    public void setAvailableFpsRange(List<String> f){
+        fpsList = f;
+        fpsUpdated = true;
+    }
 
     public int getAudioBufSize(){return audioBufSize; }
 

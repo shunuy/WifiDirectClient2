@@ -10,17 +10,11 @@
     android:background="@color/black"
     tools:context="com.example.ivan.wifidirectclient2.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/textView" />
-
     <FrameLayout
         android:id="@+id/layout_frame1"
         android:layout_width="320dp"
         android:layout_height="240dp"
-        android:layout_below="@+id/textView"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
     </FrameLayout>
@@ -30,7 +24,24 @@
         android:layout_height="wrap_content"
         android:text="Start Transmit"
         android:id="@+id/button_start_server"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <Spinner
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:id="@+id/spinner"
+        android:spinnerMode="dropdown"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
+
+    <Spinner
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:id="@+id/spinner2"
+        android:spinnerMode="dropdown"
+        android:layout_above="@+id/spinner"
+        android:layout_alignParentRight="true" />
+
 </RelativeLayout>

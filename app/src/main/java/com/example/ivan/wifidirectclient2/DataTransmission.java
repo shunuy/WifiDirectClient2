@@ -89,7 +89,7 @@ public class DataTransmission implements Runnable{
                     transfer();
                 }
                 else{
-                    //Log.d(TAG,"Image not ready");
+                    Log.d(TAG,"Image not ready");
                 }
             }
             //Delay before retrieving next frame
@@ -127,14 +127,14 @@ public class DataTransmission implements Runnable{
         byte[] transfer_length  = ByteBuffer.allocate(4).putInt(pictureData.length).array();
         picture_length = pictureData.length;
 
-        //Log.d(TAG, "Sending First Packet");
+        Log.d(TAG, "Sending First Packet");
         try {
             os.write(transfer_length, 0, transfer_length.length);
         } catch (IOException e) {
             Log.d(TAG, "Client Service Error, IO Exception: " + e.getMessage());
         }
 
-        //Log.d(TAG, "Sending Second Packet, Length of data: " + picture_length);
+        Log.d(TAG, "Sending Second Packet, Length of data: " + picture_length);
         while(marker < picture_length){
 
             if(picture_length - marker >=1024){
@@ -163,7 +163,7 @@ public class DataTransmission implements Runnable{
             audioData = dm.getAudio();
         }
 
-        //Log.d(TAG,"Sending Third Packet");
+        Log.d(TAG,"Sending Third Packet");
         try {
             //Log.d(TAG,"Writing Audio Data of length: " + audioData.length);
             os.write(audioData, 0, audioData.length);
