@@ -7,11 +7,11 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch: # 允许手动触发
 
 jobs:
   build:
-    runs-on: ubuntu-24.04  # 更新为最新版本
+    runs-on: ubuntu-latest  # 默认使用 Ubuntu 最新版本
 
     steps:
       # 1. Checkout 代码
@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'adoptopenjdk'
+          distribution: 'temurin'  # 使用 temurin 替代 adoptopenjdk
 
       # 3. 设置 Android SDK
       - name: Set up Android SDK
