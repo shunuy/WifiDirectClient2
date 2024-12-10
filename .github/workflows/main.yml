@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 默认使用 Ubuntu 最新版本
+    runs-on: ubuntu-latest  # 使用最新的 Ubuntu
 
     steps:
       # 1. Checkout 代码
@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'temurin'  # 使用 temurin 替代 adoptopenjdk
+          distribution: 'temurin'
 
       # 3. 设置 Android SDK
       - name: Set up Android SDK
@@ -31,11 +31,15 @@ jobs:
         with:
           sdk-version: '30.0.3'
 
-      # 4. 通过 Gradle 构建 APK
+      # 4. 验证 Gradle Wrapper 版本
+      - name: Verify Gradle version
+        run: ./gradlew --version
+
+      # 5. 通过 Gradle 构建 APK
       - name: Build APK
         run: ./gradlew assembleRelease
 
-      # 5. 上传构建的 APK 文件
+      # 6. 上传构建的 APK 文件
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
