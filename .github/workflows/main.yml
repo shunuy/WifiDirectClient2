@@ -1,6 +1,5 @@
 name: Android Build
 
-# 添加 workflow_dispatch，允许手动触发构建
 on:
   push:
     branches:
@@ -8,11 +7,11 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch: # 允许手动触发
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # 更新为最新版本
 
     steps:
       # 1. Checkout 代码
@@ -26,9 +25,9 @@ jobs:
           java-version: '11'
           distribution: 'adoptopenjdk'
 
-      # 3. 安装 Android SDK
+      # 3. 设置 Android SDK
       - name: Set up Android SDK
-        uses: reactivecircus/android-sdk-manager-action@v2
+        uses: android-actions/setup-android@v2
         with:
           sdk-version: '30.0.3'
 
@@ -39,3 +38,6 @@ jobs:
       # 5. 上传构建的 APK 文件
       - name: Upload APK
         uses: actions/upload-artifact@v3
+        with:
+          name: apk
+          path: app/build/outputs/apk/release/app-release.apk
