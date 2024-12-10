@@ -1,6 +1,6 @@
 name: Android Build
 
-# 当 push 到特定分支时触发构建
+# 添加 workflow_dispatch，允许手动触发构建
 on:
   push:
     branches:
@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch: # 允许手动触发
 
 jobs:
   build:
@@ -38,6 +39,3 @@ jobs:
       # 5. 上传构建的 APK 文件
       - name: Upload APK
         uses: actions/upload-artifact@v3
-        with:
-          name: apk
-          path: app/build/outputs/apk/release/app-release.apk
